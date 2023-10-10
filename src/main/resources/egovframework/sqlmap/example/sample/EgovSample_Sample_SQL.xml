@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Sample">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+<!-- 	<typeAlias  alias="searchVO" type="egovframework.example.sample.service.SampleDefaultVO"/> -->
+	<typeAlias  alias="clCodeVO" type="egovframework.example.sample.service.ClCodeVO"/>
+	
+
+	<select id="testDAO.selectClCodeList" resultClass="clCodeVO">
+        <![CDATA[
+        	SELECT a.cl_code, a.cl_code_nm, a.use_at, COUNT(b.code_id) AS cnt
+			FROM testdata.t_comtccmmnclcode a
+			LEFT JOIN testdata.t_comtccmmncode b ON (a.cl_code = b.cl_code)
+			WHERE 1=1
+			AND a.cl_code like concat('%',#cl_code#,'%')
+			AND a.cl_code_nm like concat('%',#cl_code_nm#,'%')
+			GROUP BY a.cl_code, a.cl_code_nm, a.use_at
+			ORDER BY a.cl_code ASC;
+        ]]>
+    </select>
+    
+    <select id="testDAO.getTotalCount" parameterClass="string" resultClass="int">
+        <![CDATA[
+        	select count(*)
+        	from $data$
+        ]]>
+    </select>
+    
+    <select id="testDAO.getClCodeInfo" parameterClass="string" resultClass="clCodeVO">
+        <![CDATA[
+        	select 
+        		  cl_code
+        		, cl_code_nm
+        		, cl_code_dc
+        		, use_at
+        	from t_comtccmmnclcode
+        	where cl_code = #data#
+        ]]>
+    </select>
+    
+    <update id="testDAO.saveClCodeData" parameterClass="clCodeVO">
+    	<![CDATA[
+        	update t_comtccmmnclcode
+        	set
+        		  cl_code_nm = #cl_code_nm#
+        		, cl_code_dc = #cl_code_dc#
+        		, use_at = #use_at#
+        	where cl_code = #cl_code#
+        ]]>
+    </update>
+    
+    <delete id="testDAO.deleteClCodeData" parameterClass="clCodeVO">
+    	<![CDATA[
+    		delete from t_comtccmmnclcode
+    		where cl_code = #cl_code#
+        ]]>
+    </delete>
+    
+    <select id="testDAO.checkClCode" parameterClass="clCodeVO" resultClass="int">
+    	<![CDATA[
+    		select count(cl_code)
+    		from t_comtccmmnclcode
+    		where cl_code = #cl_code#
+        ]]>
+    </select>
+    
+    <!-- 
+	    select key 안썻을시? 그냥 업데이트 된 행 수 반환 하려면 update 태그쓴다
+	 	아직 이유는 모르겠음
+	 	select key 썻을때는 select key 값 반환
+     -->
+    <update id="testDAO.addClCode" parameterClass="clCodeVO">
+    	<![CDATA[
+			insert into t_comtccmmnclcode(
+				cl_code, cl_code_nm, cl_code_dc, use_at
+			)values(
+				#cl_code#, #cl_code_nm#, #cl_code_dc#, #use_at#
+			)     		
+        ]]>
+    </update>
+    
+    
+<!-- 	<resultMap id="sample" class="egovframework.example.sample.service.SampleVO"> -->
+<!-- 		<result property="id" column="id"/> -->
+<!-- 		<result property="name" column="name"/> -->
+<!-- 		<result property="description" column="description"/> -->
+<!-- 		<result property="useYn" column="use_yn"/> -->
+<!-- 		<result property="regUser" column="reg_user"/> -->
+<!-- 	</resultMap> -->
+
+<!-- 	<insert id="sampleDAO.insertSample"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			INSERT INTO SAMPLE  -->
+<!-- 				( ID -->
+<!-- 				  , NAME -->
+<!-- 				  , DESCRIPTION -->
+<!-- 				  , USE_YN -->
+<!-- 				  , REG_USER ) -->
+<!-- 			VALUES ( #id# -->
+<!-- 				  , #name# -->
+<!-- 				  , #description# -->
+<!-- 				  , #useYn# -->
+<!-- 				  , #regUser# ) -->
+<!-- 		]]> -->
+<!-- 	</insert> -->
+	
+<!-- 	<update id="sampleDAO.updateSample"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			UPDATE SAMPLE -->
+<!-- 			SET ID=#id# -->
+<!-- 				, NAME=#name# -->
+<!-- 				, DESCRIPTION=#description# -->
+<!-- 				, USE_YN=#useYn# -->
+<!-- 			WHERE ID=#id# -->
+<!-- 		]]> -->
+<!-- 	</update> -->
+	
+<!-- 	<delete id="sampleDAO.deleteSample"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			DELETE FROM SAMPLE  -->
+<!-- 			WHERE ID=#id# -->
+<!-- 		]]> -->
+<!-- 	</delete> -->
+    
+	
+<!-- 	<select id="sampleDAO.selectSampleList" parameterClass="searchVO" resultClass="egovMap"> -->
+
+<!-- 			SELECT -->
+<!-- 				ID, NAME, DESCRIPTION, USE_YN, REG_USER -->
+<!-- 			FROM SAMPLE -->
+<!-- 			WHERE 1=1 -->
+<!-- 			<isEqual prepend="AND" property="searchCondition" compareValue="0"> -->
+<!-- 				ID LIKE '%' || #searchKeyword# || '%' -->
+<!-- 			</isEqual> -->
+<!-- 			<isEqual prepend="AND" property="searchCondition" compareValue="1"> -->
+<!-- 				NAME LIKE '%' || #searchKeyword# || '%' -->
+<!-- 			</isEqual> -->
+<!-- 			ORDER BY ID ASC -->
+<!-- 			LIMIT #recordCountPerPage# OFFSET #firstIndex#		 -->
+<!-- 	</select> -->
+	
+<!-- 	<select id="sampleDAO.selectSampleListTotCnt" parameterClass="searchVO" resultClass="int"> -->
+
+<!-- 			SELECT COUNT(*) totcnt -->
+<!-- 			FROM SAMPLE -->
+<!-- 			WHERE 1=1 -->
+<!-- 			<isEqual prepend="AND" property="searchCondition" compareValue="0"> -->
+<!-- 				ID LIKE '%' || #searchKeyword# || '%' -->
+<!-- 			</isEqual> -->
+<!-- 			<isEqual prepend="AND" property="searchCondition" compareValue="1"> -->
+<!-- 				NAME LIKE '%' || #searchKeyword# || '%' -->
+<!-- 			</isEqual> -->
+<!-- 	</select> -->
+
+</sqlMap>

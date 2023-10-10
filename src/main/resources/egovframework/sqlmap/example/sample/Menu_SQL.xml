@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Menu">
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="authorInfoVO" type="egovframework.example.sample.service.T_comtnauthorinfoVO"/>
+	<typeAlias alias="progrmVO" type="egovframework.example.sample.service.T_comtnprogrmlistVO"/>
+	<typeAlias alias="menuInfoVO" type="egovframework.example.sample.service.T_comtnmenuinfoVO"/>
+	<typeAlias alias="menuCreatdVO" type="egovframework.example.sample.service.T_comtnmenucreatdtlsVO"/>
+	
+	<select id="menuDAO.getAuthorInfoList" parameterClass="authorInfoVO" resultClass="authorInfoVO">
+		<![CDATA[
+			select 
+				author_code
+				, author_nm
+				, author_dc
+				, author_creat_de
+			from t_comtnauthorinfo
+			where author_nm like concat('%', #author_nm#, '%')
+		]]>
+	</select>
+	
+	<select id="menuDAO.showAuthorInfo" parameterClass="string" resultClass="authorInfoVO">
+		<![CDATA[
+			select
+				author_code
+				, author_nm 
+				, author_dc
+				, author_creat_de
+			from t_comtnauthorinfo
+			where author_code = #author_code#
+		]]>
+	</select>
+	
+	<update id="menuDAO.authorInfoModify" parameterClass="authorInfoVO">
+		<![CDATA[
+			update t_comtnauthorinfo
+			set
+				  author_nm = #author_nm#  
+				, author_dc = #author_dc#
+				, author_creat_de = #author_creat_de#
+			where author_code = #author_code#
+		]]>
+	</update>
+	
+	<update id="menuDAO.authorInfoRegist" parameterClass="authorInfoVO">
+		insert into t_comtnauthorinfo(
+			  author_code
+			, author_nm 
+			, author_dc
+			, author_creat_de
+		)values(
+			  #author_code#
+			, #author_nm#
+			, #author_dc#
+			, #author_creat_de#
+		)
+	</update>
+	
+	<delete id="menuDAO.deleteAuthorInfo" parameterClass="authorInfoVO">
+		delete from t_comtnauthorinfo
+		where author_code = #author_code#
+	</delete>
+	
+	<select id="menuDAO.getProgrmList" parameterClass="progrmVO" resultClass="progrmVO">
+		<![CDATA[
+			select 
+				progrm_file_nm,
+				progrm_korean_nm,
+				url,
+				progrm_dc
+			from t_comtnprogrmlist
+			where 1=1
+			and progrm_korean_nm like concat('%', #progrm_korean_nm#, '%')
+			order by PROGRM_FILE_NM asc
+		]]>
+	</select>
+	
+	<select id="menuDAO.detailProgrmFileInfo" parameterClass="string" resultClass="progrmVO">
+		select
+			*
+		from t_comtnprogrmlist
+		where progrm_file_nm = #progrm_file_nm#
+	</select>
+	
+	<update id="menuDAO.progrmFileModify" parameterClass="progrmVO">
+		update t_comtnprogrmlist
+		set 
+			  progrm_stre_path = #progrm_stre_path#
+			, progrm_korean_nm = #progrm_korean_nm#
+			, url = #url#
+			, progrm_dc = #progrm_dc#
+		where progrm_file_nm = #progrm_file_nm#
+	</update>
+	
+	<delete id="menuDAO.delProgrmFile" parameterClass="progrmVO">
+		delete from t_comtnprogrmlist
+		where progrm_file_nm = #progrm_file_nm#
+	</delete>
+	
+	<update id="menuDAO.progrmFileRegistProcess" parameterClass="progrmVO">
+		insert into t_comtnprogrmlist(
+			  progrm_file_nm     
+			, progrm_korean_nm   
+			, progrm_stre_path   
+			, progrm_dc          
+			, url                
+		)values(
+			  #progrm_file_nm#
+			, #progrm_korean_nm#
+			, #progrm_stre_path#
+			, #progrm_dc#
+			, #url#
+		)
+	</update>
+	
+	<select id="menuDAO.getMenuInfoList" resultClass="menuInfoVO" parameterClass="authorInfoVO">
+		select
+			  menu_no
+			, menu_nm
+			, upper_menu_no
+			, progrm_file_nm
+			, menu_ordr
+			, menu_dc
+			, relate_image_path
+			, relate_image_nm
+			, target
+			, (
+			 	select 
+		 			count(MENU_NO)
+		 		from testdata.t_comtnmenucreatdtls
+		 		where 1=1
+		 		and AUTHOR_CODE = #author_code#
+		 		and menu_no = a.menu_no 
+			  ) as selectedCnt
+		from testdata.t_comtnmenuinfo a
+	</select>
+	
+	<delete id="menuDAO.nodeDelete" parameterClass="string">
+		delete from t_comtnmenucreatdtls
+		where author_code = #author_code#
+	</delete>
+	
+	<update id="menuDAO.menuCreatdProcess" parameterClass="menuCreatdVO">
+		insert into t_comtnmenucreatdtls(
+			  menu_no
+			, author_code
+			, mapng_creat_id
+		)values(
+			  #menu_no#
+			, #author_code#
+			, #mapng_creat_id#
+		)
+	</update>
+	
+	<delete id="menuDAO.deleteMenu" parameterClass="menuInfoVO">
+		delete from t_comtnmenuinfo
+		where menu_no = #menu_no#
+	</delete>
+	
+	<update id="menuDAO.updateMenu" parameterClass="menuInfoVO">
+		update t_comtnmenuinfo
+		set
+			  upper_menu_no = #upper_menu_no# 
+			, menu_ordr = #menu_ordr# 
+			, menu_nm = #menu_nm# 
+			, progrm_file_nm = #progrm_file_nm# 
+			, relate_image_path = #relate_image_path# 
+			, relate_image_nm = #relate_image_nm# 
+			, menu_dc = #menu_dc# 
+		where menu_no = #menu_no# 
+	</update>
+	
+	<select id="menuDAO.checkMenuNo" parameterClass="menuInfoVO" resultClass="int">
+		select
+			count(menu_no)
+		from t_comtnmenuinfo
+		where menu_no = #menu_no#
+	</select>
+	
+	<update id="menuDAO.insertMenu" parameterClass="menuInfoVO">
+		insert into t_comtnmenuinfo(
+			  menu_no
+			, menu_nm
+			, upper_menu_no
+			, progrm_file_nm
+			, menu_ordr
+			, menu_dc
+			, relate_image_path
+			, relate_image_nm
+		) values(
+			  #menu_no#
+			, #menu_nm#
+			, #upper_menu_no#
+			, #progrm_file_nm#
+			, #menu_ordr#
+			, #menu_dc#
+			, #relate_image_path#
+			, #relate_image_nm#
+		)
+	</update>
+	
+	<select id="menuDAO.getCreatdMenu" parameterClass="string" resultClass="menuInfoVO">
+		select 
+			a.menu_no as menu_no,
+			b.upper_menu_no as upper_menu_no,
+			b.menu_nm as menu_nm,
+			c.url as url,
+			b.menu_ordr as menu_ordr,
+			b.progrm_file_nm as progrm_file_nm,
+			b.relate_image_path as relate_image_path
+		from testdata.t_comtnmenucreatdtls a
+		join testdata.t_comtnmenuinfo b on (a.menu_no = b.menu_no)
+		join testdata.t_comtnprogrmlist c on (b.progrm_file_nm = c.progrm_file_nm)
+		where author_code = #author_code#;
+	</select>
+	
+	<select id="menuDAO.getCreatdMenu2" parameterClass="hashMap" resultClass="menuInfoVO">
+		select 
+			a.MENU_NO ,
+			b.UPPER_MENU_NO ,
+			b.MENU_NM,
+			c.URL,
+			b.MENU_ORDR ,
+			b.PROGRM_FILE_NM ,
+			b.RELATE_IMAGE_PATH
+		from testdata.t_comtnmenucreatdtls a
+		join testdata.t_comtnmenuinfo b on (a.MENU_NO = b.MENU_NO)
+		join testdata.t_comtnprogrmlist c on (b.PROGRM_FILE_NM = c.PROGRM_FILE_NM)
+		where AUTHOR_CODE = #author_code#
+		and b.UPPER_MENU_NO in (#upper_menu_no#)
+		order by b.MENU_ORDR asc
+	</select>
+	
+</sqlMap>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

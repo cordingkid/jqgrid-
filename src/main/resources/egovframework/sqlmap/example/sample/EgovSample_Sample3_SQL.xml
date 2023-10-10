@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Sample3">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="clCodeVO" type="egovframework.example.sample.service.ClCodeVO"/>
+	<typeAlias  alias="codeVO" type="egovframework.example.sample.service.CodeVO"/>
+	<typeAlias  alias="detailCodeVO" type="egovframework.example.sample.service.DetailCodeVO"/>
+	
+	<select id="test3DAO.getCommCodeData" resultClass="codeVO" parameterClass="codeVO">
+		<![CDATA[
+			select 
+				  code_id
+				, code_id_nm
+			from t_comtccmmncode
+			where cl_code = #cl_code#
+			order by 2 asc
+		]]>
+	</select>
+	
+	<select id="test3DAO.detailCodeList" parameterClass="detailCodeVO" resultClass="detailCodeVO">
+		<![CDATA[
+			select 
+				b.code_id as code_id,
+				a.code as code,
+				a.code_nm as code_nm,
+				a.use_at as use_at
+			from t_comtccmmndetailcode a
+			inner join t_comtccmmncode b on (a.code_id = b.code_id)
+			where 1=1
+			and a.code_id like concat('%',#code_id#,'%')
+			and a.code_nm like concat('%',#code_nm#,'%')
+			and a.code like concat('%',#code#,'%')
+			order by 1 asc
+		]]>
+	</select>
+	
+	<select id="test3DAO.getAutoPrimaryKeyDetailCode" parameterClass="detailCodeVO" resultClass="string">
+		<![CDATA[
+			SELECT concat(#code#, lpad(ifnull(CAST(substring(max(code) , 7, 2)  AS UNSIGNED) + 1,1), 2, '00')) as 'autoPk'
+			from t_comtccmmndetailcode 
+			where code like concat(#code#,'%')
+		]]>
+	</select>
+	
+	<update id="test3DAO.detailCodeRegistProcess" parameterClass="detailCodeVO">
+		<![CDATA[
+			insert into t_comtccmmndetailcode(
+				  code
+				, code_id
+				, code_nm
+				, code_dc
+				, use_at
+			)values(
+				  #code#
+				, #code_id#
+				, #code_nm#
+				, #code_dc#
+				, #use_at#
+			)
+		]]>
+	</update>
+	
+	<select id="test3DAO.detailCodeInfo" parameterClass="string" resultClass="detailCodeVO">
+		select
+			  a.code as code
+			, a.code_nm as code_nm
+			, a.code_dc as code_dc
+			, a.use_at as use_at
+			, b.code_id as code_id
+			, b.code_id_nm as code_id_nm
+		from t_comtccmmndetailcode a
+		inner join t_comtccmmncode b on (a.code_id = b.code_id)
+		where code = #code#
+	</select>
+	
+	<delete id="test3DAO.deleteDetailCode" parameterClass="detailCodeVO">
+		delete from t_comtccmmndetailcode
+		where code = #code#
+	</delete>
+	
+	<update id="test3DAO.updateDetailCodeProcess" parameterClass="detailCodeVO">
+		<![CDATA[
+			update t_comtccmmndetailcode
+			set
+				  code_nm = #code_nm#
+				, code_dc = #code_dc#
+				, use_at = #use_at#
+			where code = #code#
+		]]>
+	</update>
+	
+<!-- 	<select id="test3DAO.commCodeDataList" resultClass="codeVO" parameterClass="codeVO"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			select  -->
+<!-- 				  b.cl_code_nm -->
+<!-- 				, b.cl_code -->
+<!-- 				, a.code_id -->
+<!-- 				, a.code_id_nm -->
+<!-- 				, a.use_at -->
+<!-- 				,(select count(code) from testdata.t_comtccmmndetailcode where code_id = a.code_id) as cnt -->
+<!-- 			from testdata.t_comtccmmncode a -->
+<!-- 			inner join testdata.t_comtccmmnclcode b on (a.cl_code = b.cl_code) -->
+<!-- 			where 1=1 -->
+<!-- 			and a.code_id like concat('%', #code_id#,'%') -->
+<!-- 			and a.cl_code like concat('%', #cl_code#,'%') -->
+<!-- 			and a.code_id_nm like concat('%', #code_id_nm#,'%') -->
+<!-- 			order by a.code_id asc -->
+<!-- 		]]> -->
+<!-- 	</select> -->
+	
+<!-- 	<select id="test2DAO.getAutoPrimaryKeyCmmCode" parameterClass="codeVO" resultClass="String"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			SELECT  -->
+<!-- 				concat(#cl_code#, lpad(ifnull(CAST(substring(max(code_id), 4, 7)  AS UNSIGNED) + 1, 1), 3, '000')) as 'autoPk' -->
+<!-- 			from t_comtccmmncode -->
+<!-- 			where code_id like concat(#cl_code#,'%')		 -->
+<!-- 		]]> -->
+<!-- 	</select> -->
+	
+<!-- 	<update id="test2DAO.saveCommCode" parameterClass="codeVO"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			insert into t_comtccmmncode( -->
+<!-- 				  code_id -->
+<!-- 				, cl_code -->
+<!-- 				, code_id_nm -->
+<!-- 				, code_id_dc -->
+<!-- 				, use_at -->
+<!-- 			) values( -->
+<!-- 				  #code_id# -->
+<!-- 				, #cl_code# -->
+<!-- 				, #code_id_nm# -->
+<!-- 				, #code_id_dc# -->
+<!-- 				, #use_at# -->
+<!-- 			) -->
+<!-- 		]]> -->
+<!-- 	</update> -->
+	
+<!-- 	<select id="test2DAO.getCommCodeInfo" parameterClass="string" resultClass="codeVO"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			select  -->
+<!-- 				  a.code_id -->
+<!-- 				, a.code_id_nm -->
+<!-- 				, a.code_id_dc -->
+<!-- 				, a.use_at -->
+<!-- 				, b.cl_code -->
+<!-- 				, b.cl_code_nm -->
+<!-- 			from t_comtccmmncode a -->
+<!-- 			inner join t_comtccmmnclcode b on (a.cl_code = b.cl_code) -->
+<!-- 			where a.code_id = #code_id# -->
+<!-- 		]]> -->
+<!-- 	</select> -->
+	
+	
+<!-- 	<update id="test2DAO.uptCommCode" parameterClass="codeVO"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			update t_comtccmmncode -->
+<!-- 			set -->
+<!-- 				code_id_nm = #code_id_nm# -->
+<!-- 				, code_id_dc = #code_id_dc# -->
+<!-- 				, use_at = #use_at# -->
+<!-- 			where code_id = #code_id# -->
+<!-- 		]]> -->
+<!-- 	</update> -->
+	
+<!-- 	<delete id="test2DAO.delCommCode" parameterClass="codeVO"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			delete from t_comtccmmncode -->
+<!-- 			where code_id = #code_id# -->
+<!-- 		]]> -->
+<!-- 	</delete> -->
+
+</sqlMap>
